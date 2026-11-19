@@ -46,14 +46,32 @@ def sla_op(conn, naam, url, resultaat):
     conn.commit()
 
 
+def verbind():
+    """Maakt verbinding met de database en probeert het opnieuw zolang dat niet lukt."""
+    while True:
+        try:
+            return psycopg.connect(DATABASE_URL, connect_timeout=5)
+        except psycopg.OperationalError:
+            print("Database niet bereikbaar, over 5 seconden opnieuw proberen...", flush=True)
+            time.sleep(5)
+
+
 def main():
     websites = lees_websites(WEBSITES_FILE)
     print(f"Checker gestart: {len(websites)} websites, elke {INTERVAL} seconden", flush=True)
-    conn = psycopg.connect(DATABASE_URL)
+    conn = verbind()
     while True:
         for naam, url in websites:
             resultaat = controleer(url)
-            sla_op(conn, naam, url, resultaat)
+            try:
+                sla_op(conn, naam, url, resultaat)
+            except psycopg.OperationalError:
+                # Verbinding verbroken (bijv. database herstart): opnieuw verbinden
+                # en deze meting nog een keer opslaan, zodat er niets verloren gaat.
+                print("Verbinding met de database verbroken, opnieuw verbinden...", flush=True)
+                conn.close()
+                conn = verbind()
+                sla_op(conn, naam, url, resultaat)
             status = "UP  " if resultaat[0] else "DOWN"
             ms = resultaat[2] if resultaat[2] is not None else "-"
             print(f"{status} {naam:<14} {ms:>5} ms  {resultaat[3] or ''}", flush=True)

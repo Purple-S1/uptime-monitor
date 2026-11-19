@@ -1,0 +1,9 @@
+# Laadt alle dashboards (.json) uit deze map automatisch in Grafana.
+apiVersion: 1
+
+providers:
+  - name: uptime
+    type: file
+    allowUiUpdates: false
+    options:
+      path: /etc/grafana/provisioning/dashboards

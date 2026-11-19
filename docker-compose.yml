@@ -31,5 +31,26 @@ services:
       db:
         condition: service_healthy                              # wacht tot de database klaar is
 
+  # Grafana: dashboard met grafieken, te openen op http://localhost:3000
+  grafana:
+    image: grafana/grafana:13.0.13
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_AUTH_ANONYMOUS_ENABLED: "true"                         # dashboard bekijken zonder inloggen
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer                        # ...maar alleen kijken, niet aanpassen
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning/dashboards/uptime.json
+      POSTGRES_DB: ${POSTGRES_DB}                               # gebruikt in de datasource
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   db-data:
+  grafana-data:

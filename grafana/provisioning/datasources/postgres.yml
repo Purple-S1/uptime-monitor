@@ -1,0 +1,17 @@
+# Grafana koppelt hiermee automatisch aan de database (geen klikwerk nodig).
+# $POSTGRES_... wordt ingevuld vanuit de omgevingsvariabelen van de container.
+apiVersion: 1
+
+datasources:
+  - name: Uptime-database
+    uid: uptime-db
+    type: grafana-postgresql-datasource
+    url: db:5432
+    user: $POSTGRES_USER
+    isDefault: true
+    jsonData:
+      database: $POSTGRES_DB
+      sslmode: disable
+      postgresVersion: 1700
+    secureJsonData:
+      password: $POSTGRES_PASSWORD

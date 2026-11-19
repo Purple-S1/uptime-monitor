@@ -1,0 +1,167 @@
+{
+  "uid": "uptime",
+  "title": "Uptime Monitor",
+  "description": "Bereikbaarheid en reactietijd van websites - VS09 Sven Teuben",
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "schemaVersion": 39,
+  "editable": false,
+  "panels": [
+    {
+      "id": 1,
+      "type": "table",
+      "title": "Huidige status",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 7 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+          "editorMode": "code",
+          "rawQuery": true,
+          "format": "table",
+          "rawSql": "SELECT DISTINCT ON (site)\n  site AS \"Website\",\n  CASE WHEN NOT up THEN 'DOWN' WHEN response_ms > 1000 THEN 'TRAAG' ELSE 'UP' END AS \"Status\",\n  response_ms AS \"Reactietijd (ms)\",\n  status_code AS \"HTTP-code\",\n  checked_at AS \"Laatst gecontroleerd\"\nFROM checks\nORDER BY site, checked_at DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left" } },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Status" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "UP": { "color": "green", "index": 0 },
+                      "TRAAG": { "color": "orange", "index": 1 },
+                      "DOWN": { "color": "red", "index": 2 }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": { "showHeader": true }
+    },
+    {
+      "id": 2,
+      "type": "bargauge",
+      "title": "Uptime laatste 24 uur",
+      "gridPos": { "x": 0, "y": 7, "w": 9, "h": 9 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+          "editorMode": "code",
+          "rawQuery": true,
+          "format": "table",
+          "rawSql": "SELECT site AS \"Website\", round(100.0 * avg(up::int), 1) AS \"Uptime\"\nFROM checks\nWHERE checked_at > now() - interval '24 hours'\nGROUP BY site\nORDER BY site"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 95 },
+              { "color": "green", "value": 99 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "reduceOptions": { "values": true, "calcs": [], "fields": "" }
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Reactietijd per website (ms) - grens 1000 ms",
+      "gridPos": { "x": 9, "y": 7, "w": 15, "h": 9 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+          "editorMode": "code",
+          "rawQuery": true,
+          "format": "time_series",
+          "rawSql": "SELECT checked_at AS \"time\", site AS metric, response_ms AS value\nFROM checks\nWHERE $__timeFilter(checked_at) AND response_ms IS NOT NULL\nORDER BY 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 4,
+            "showPoints": "auto",
+            "spanNulls": true,
+            "thresholdsStyle": { "mode": "line+area" }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "transparent", "value": null },
+              { "color": "red", "value": 1000 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 4,
+      "type": "state-timeline",
+      "title": "Bereikbaarheid in de tijd",
+      "gridPos": { "x": 0, "y": 16, "w": 24, "h": 7 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+          "editorMode": "code",
+          "rawQuery": true,
+          "format": "time_series",
+          "rawSql": "SELECT checked_at AS \"time\", site AS metric, CASE WHEN up THEN 1 ELSE 0 END AS value\nFROM checks\nWHERE $__timeFilter(checked_at)\nORDER BY 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": { "color": "green", "text": "UP", "index": 0 },
+                "0": { "color": "red", "text": "DOWN", "index": 1 }
+              }
+            }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] }
+        },
+        "overrides": []
+      },
+      "options": { "showValue": "never", "mergeValues": true, "rowHeight": 0.8 }
+    }
+  ]
+}

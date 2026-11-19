@@ -6,6 +6,7 @@ services:
   # PostgreSQL-database waarin alle controles worden opgeslagen
   db:
     image: postgres:17.12-alpine
+    restart: unless-stopped                                     # na een crash of herstart van de Mac weer starten
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -18,10 +19,12 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    networks: [backend]
 
   # Python-programma dat de websites controleert en het resultaat opslaat
   checker:
     build: ./checker
+    restart: unless-stopped                                     # na een crash of herstart van de Mac weer starten
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       CHECK_INTERVAL: ${CHECK_INTERVAL}
@@ -30,10 +33,12 @@ services:
     depends_on:
       db:
         condition: service_healthy                              # wacht tot de database klaar is
+    networks: [backend]
 
   # Statuspagina (Flask + Gunicorn), te openen op http://localhost:8000
   web:
     build: ./web
+    restart: unless-stopped                                     # na een crash of herstart van de Mac weer starten
     ports:
       - "8000:8000"
     environment:
@@ -42,10 +47,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks: [frontend, backend]
 
   # Grafana: dashboard met grafieken, te openen op http://localhost:3000
   grafana:
     image: grafana/grafana:13.0.13
+    restart: unless-stopped                                     # na een crash of herstart van de Mac weer starten
     ports:
       - "3000:3000"
     environment:
@@ -62,6 +69,13 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks: [frontend, backend]
+
+# Twee netwerken: 'frontend' voor wat de gebruiker ziet, 'backend' voor de database.
+# De database zit alleen in 'backend' en heeft geen poort naar buiten.
+networks:
+  frontend:
+  backend:
 
 volumes:
   db-data:

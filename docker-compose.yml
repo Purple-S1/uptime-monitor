@@ -19,5 +19,17 @@ services:
       timeout: 3s
       retries: 10
 
+  # Python-programma dat de websites controleert en het resultaat opslaat
+  checker:
+    build: ./checker
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      CHECK_INTERVAL: ${CHECK_INTERVAL}
+    volumes:
+      - ./config/websites.txt:/config/websites.txt:ro           # lijst met websites
+    depends_on:
+      db:
+        condition: service_healthy                              # wacht tot de database klaar is
+
 volumes:
   db-data:

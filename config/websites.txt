@@ -1,0 +1,7 @@
+# Websites die de checker controleert. Eén per regel: naam | adres
+# host.docker.internal = de Mac zelf, gezien vanuit een container
+Purple Q      | https://www.purple-q.nl
+Google        | https://www.google.com
+GitHub        | https://github.com
+NU.nl         | https://www.nu.nl
+Hallo Docker  | http://host.docker.internal:8080/health

@@ -245,7 +245,7 @@
           "editorMode": "code",
           "rawQuery": true,
           "format": "time_series",
-          "rawSql": "SELECT checked_at AS \"time\", site AS metric, CASE WHEN up THEN 1 ELSE 0 END AS value\nFROM checks\nWHERE $__timeFilter(checked_at)\nORDER BY 1"
+          "rawSql": "SELECT $__timeGroupAlias(checked_at, '30s'), site AS metric, min(CASE WHEN up THEN 1 ELSE 0 END) AS value\nFROM checks\nWHERE $__timeFilter(checked_at)\nGROUP BY 1, 2\nORDER BY 1"
         }
       ],
       "fieldConfig": {
@@ -282,6 +282,11 @@
                 "value": 1
               }
             ]
+          },
+          "custom": {
+            "spanNulls": true,
+            "fillOpacity": 80,
+            "lineWidth": 0
           }
         },
         "overrides": []
@@ -289,7 +294,10 @@
       "options": {
         "showValue": "never",
         "mergeValues": true,
-        "rowHeight": 0.8
+        "rowHeight": 0.8,
+        "legend": {
+          "showLegend": false
+        }
       }
     }
   ]

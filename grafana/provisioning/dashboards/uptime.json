@@ -4,7 +4,10 @@
   "description": "Bereikbaarheid en reactietijd van websites - VS09 Sven Teuben",
   "timezone": "browser",
   "refresh": "30s",
-  "time": { "from": "now-1h", "to": "now" },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
   "schemaVersion": 39,
   "editable": false,
   "panels": [
@@ -12,12 +15,23 @@
       "id": 1,
       "type": "table",
       "title": "Huidige status",
-      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 7 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "uptime-db"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "uptime-db"
+          },
           "editorMode": "code",
           "rawQuery": true,
           "format": "table",
@@ -25,21 +39,43 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "custom": { "align": "left" } },
+        "defaults": {
+          "custom": {
+            "align": "left"
+          }
+        },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "Status" },
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
             "properties": [
-              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic"
+                }
+              },
               {
                 "id": "mappings",
                 "value": [
                   {
                     "type": "value",
                     "options": {
-                      "UP": { "color": "green", "index": 0 },
-                      "TRAAG": { "color": "orange", "index": 1 },
-                      "DOWN": { "color": "red", "index": 2 }
+                      "UP": {
+                        "color": "green",
+                        "index": 0
+                      },
+                      "TRAAG": {
+                        "color": "orange",
+                        "index": 1
+                      },
+                      "DOWN": {
+                        "color": "red",
+                        "index": 2
+                      }
                     }
                   }
                 ]
@@ -48,18 +84,31 @@
           }
         ]
       },
-      "options": { "showHeader": true }
+      "options": {
+        "showHeader": true
+      }
     },
     {
       "id": 2,
       "type": "bargauge",
       "title": "Uptime laatste 24 uur",
-      "gridPos": { "x": 0, "y": 7, "w": 9, "h": 9 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 9,
+        "h": 9
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "uptime-db"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "uptime-db"
+          },
           "editorMode": "code",
           "rawQuery": true,
           "format": "table",
@@ -75,31 +124,58 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "orange", "value": 95 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 95
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
+          },
+          "color": {
+            "mode": "thresholds"
           }
         },
         "overrides": []
       },
       "options": {
         "orientation": "horizontal",
-        "displayMode": "gradient",
+        "displayMode": "basic",
         "showUnfilled": true,
-        "reduceOptions": { "values": true, "calcs": [], "fields": "" }
+        "reduceOptions": {
+          "values": true,
+          "calcs": [],
+          "fields": ""
+        }
       }
     },
     {
       "id": 3,
       "type": "timeseries",
       "title": "Reactietijd per website (ms) - grens 1000 ms",
-      "gridPos": { "x": 9, "y": 7, "w": 15, "h": 9 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+      "gridPos": {
+        "x": 9,
+        "y": 8,
+        "w": 15,
+        "h": 9
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "uptime-db"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "uptime-db"
+          },
           "editorMode": "code",
           "rawQuery": true,
           "format": "time_series",
@@ -115,30 +191,57 @@
             "pointSize": 4,
             "showPoints": "auto",
             "spanNulls": true,
-            "thresholdsStyle": { "mode": "line+area" }
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "transparent", "value": null },
-              { "color": "red", "value": 1000 }
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1000
+              }
             ]
           }
         },
         "overrides": []
       },
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
     },
     {
       "id": 4,
       "type": "state-timeline",
       "title": "Bereikbaarheid in de tijd",
-      "gridPos": { "x": 0, "y": 16, "w": 24, "h": 7 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 24,
+        "h": 7
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "uptime-db"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-postgresql-datasource", "uid": "uptime-db" },
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "uptime-db"
+          },
           "editorMode": "code",
           "rawQuery": true,
           "format": "time_series",
@@ -151,17 +254,43 @@
             {
               "type": "value",
               "options": {
-                "1": { "color": "green", "text": "UP", "index": 0 },
-                "0": { "color": "red", "text": "DOWN", "index": 1 }
+                "1": {
+                  "color": "green",
+                  "text": "UP",
+                  "index": 0
+                },
+                "0": {
+                  "color": "red",
+                  "text": "DOWN",
+                  "index": 1
+                }
               }
             }
           ],
-          "color": { "mode": "thresholds" },
-          "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] }
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
         },
         "overrides": []
       },
-      "options": { "showValue": "never", "mergeValues": true, "rowHeight": 0.8 }
+      "options": {
+        "showValue": "never",
+        "mergeValues": true,
+        "rowHeight": 0.8
+      }
     }
   ]
 }
